@@ -4,9 +4,10 @@ using System.Collections;
 public class EnemyAI : MonoBehaviour {
 	
 	public float speed;
-	public float rightEdge;
-	public float leftEdge;
-	private static int direction = 1;
+	public float rightEdgePadding;
+	public float leftEdgePadding;
+	public float dropDistance = 1.0f;
+	private int direction = 1;
 	
 	
 	// Use this for initialization
@@ -20,12 +21,22 @@ public class EnemyAI : MonoBehaviour {
 		newPosition.x += speed * direction * Time.deltaTime;
 		transform.position = newPosition;
 		
-		if (transform.position.x > rightEdge) {
-			direction = -1;	
+		if (Camera.main.WorldToScreenPoint(transform.position).x > Screen.width - rightEdgePadding) {
+			direction = -1;
+			newPosition = transform.position;
+			float cameraObjectZDifference = transform.position.z - Camera.main.transform.position.z;
+			newPosition.x = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0, cameraObjectZDifference)).x;
+			newPosition.y -= dropDistance;
+			transform.position = newPosition;
 		}
 		
-		if (transform.position.x < leftEdge) {
-			direction = 1;	
+		if (Camera.current.WorldToScreenPoint(transform.position).x < 0 + leftEdgePadding) {
+			direction = 1;
+			newPosition = transform.position;
+			float cameraObjectZDifference = transform.position.z - Camera.main.transform.position.z;
+			newPosition.x = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 10)).x;
+			newPosition.y -= dropDistance;
+			transform.position = newPosition;
 		}
 	}
 }
